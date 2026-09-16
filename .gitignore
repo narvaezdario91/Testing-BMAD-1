@@ -1,0 +1,19 @@
+node_modules/
+.features-gen/
+.env
+!.env.example
+
+# Test outputs and reports
+_bmad-output/test-artifacts/test-results/
+_bmad-output/test-artifacts/playwright-report/
+_bmad-output/test-artifacts/*.xml
+_bmad-output/test-artifacts/*.json
+!_bmad-output/test-artifacts/framework-setup-progress.md
+!_bmad-output/test-artifacts/test-design/
+!_bmad-output/test-artifacts/traceability/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
