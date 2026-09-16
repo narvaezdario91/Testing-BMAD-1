@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forge Report: Playwright BDD + SOLID + TEA Framework</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      --card-bg: rgba(22, 27, 34, 0.75);
+      --card-border: rgba(48, 54, 61, 0.8);
+      --primary: #58a6ff;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+      --text-main: #c9d1d9;
+      --text-bright: #f0f6fc;
+      --text-muted: #8b949e;
+      --seal-gold: #e3b341;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #090d13;
+      background-image: var(--bg-gradient);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .header-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 36px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3fb950, #58a6ff, #a371f7);
+    }
+
+    .header-info h1 {
+      font-size: 1.9rem;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+    }
+
+    .header-info p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .meta-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--primary);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    /* Wax Seal Stamp */
+    .stamp-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wax-seal {
+      width: 140px;
+      height: 140px;
+      filter: drop-shadow(0 6px 16px rgba(0, 200, 83, 0.35));
+      animation: pulse 3s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.03); }
+    }
+
+    .section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .section h2 {
+      color: var(--text-bright);
+      font-size: 1.35rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+      padding-bottom: 12px;
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .decision-card {
+      background: rgba(13, 17, 23, 0.6);
+      border-left: 4px solid var(--success);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .decision-card h3 {
+      font-size: 1.05rem;
+      color: var(--text-bright);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .decision-card p {
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .rejected-card {
+      background: rgba(13, 17, 23, 0.6);
+      border-left: 4px solid var(--danger);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+
+    .rejected-card h3 {
+      font-size: 1.05rem;
+      color: #ff7b72;
+      margin-bottom: 4px;
+    }
+
+    .rejected-card p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .personas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .persona-card {
+      background: rgba(13, 17, 23, 0.6);
+      border: 1px solid rgba(48, 54, 61, 0.6);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .persona-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .persona-info h4 {
+      color: var(--text-bright);
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .persona-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .next-steps-list {
+      list-style: none;
+    }
+
+    .next-steps-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+    }
+
+    .next-steps-list li:last-child {
+      border-bottom: none;
+    }
+
+    .step-tag {
+      background: rgba(88, 166, 255, 0.2);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-family: monospace;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Header with Seal -->
+    <header class="header-card">
+      <div class="header-info">
+        <h1>Forge Session Report</h1>
+        <p>Framework de Automatización Playwright BDD (vitalets) + SOLID + Metodología TEA</p>
+        <span class="meta-badge">Proyecto: AI_Testing_BMAD_1 &bull; Usuario: Dario</span>
+      </div>
+      <div class="stamp-container">
+        <!-- HARDENED Wax Seal SVG -->
+        <svg class="wax-seal" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="sealGrad" cx="40%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#2ea043" />
+              <stop offset="70%" stop-color="#238636" />
+              <stop offset="100%" stop-color="#196c2e" />
+            </radialGradient>
+            <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+              <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.6"/>
+            </filter>
+            <path id="textCircle" d="M 100, 100 m -62, 0 a 62,62 0 1,1 124,0 a 62,62 0 1,1 -124,0" />
+          </defs>
+          <!-- Outer scalloped wax edge -->
+          <circle cx="100" cy="100" r="92" fill="url(#sealGrad)" filter="url(#shadow)"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke="#3fb950" stroke-width="2" stroke-dasharray="4,3"/>
+          <circle cx="100" cy="100" r="74" fill="#1b4724" />
+          
+          <!-- Curved Top Text -->
+          <text font-family="Arial, sans-serif" font-size="11.5" font-weight="bold" fill="#7ee787" letter-spacing="2">
+            <textPath href="#textCircle" startOffset="50%" text-anchor="middle">
+              BMAD FORGE &bull; VERIFIED
+            </textPath>
+          </text>
+          
+          <!-- Center Stamp Content -->
+          <rect x="35" y="85" width="130" height="30" rx="4" fill="#238636" stroke="#56d364" stroke-width="1.5" />
+          <text x="100" y="106" font-family="'Impact', 'Arial Black', sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="2">HARDENED</text>
+          <polygon points="100,60 104,70 115,70 106,77 109,87 100,81 91,87 94,77 85,70 96,70" fill="#7ee787"/>
+          <text x="100" y="140" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#a1f0a8" text-anchor="middle">TEA ARCHITECTURE</text>
+        </svg>
+      </div>
+    </header>
+
+    <!-- Locked Decisions -->
+    <section class="section">
+      <h2>🔒 Decisiones Arquitectónicas Blindadas (Locks)</h2>
+      <div class="decision-grid">
+        
+        <div class="decision-card">
+          <h3>1. Inversión de Dependencias (DIP) y Modularidad (SRP)</h3>
+          <p>Se utiliza el motor nativo de fixtures de Playwright (<code>test.extend</code>) en <code>playwright-bdd</code> para la inyección limpia de dependencias. Se reemplazan los Page Objects monolíticos por Component/Domain Objects atómicos y reutilizables.</p>
+        </div>
+
+        <div class="decision-card">
+          <h3>2. Gestión de Estado y Datos (ScenarioContext + Network-First)</h3>
+          <p>Estado entre pasos gobernado por un fixture <code>scenarioContext</code> fuertemente tipado por worker. Preparación ágil de precondiciones en <code>Given</code> vía API nativa (<code>playwright.request</code>), reservando la UI para la acción real bajo prueba (<code>When</code>).</p>
+        </div>
+
+        <div class="decision-card">
+          <h3>3. Estructura de Proyecto y Gobernanza de Tags TEA</h3>
+          <p>Layout desacoplado en capas (<code>features/</code>, <code>steps/</code>, <code>fixtures/</code>, <code>domain/components/</code>, <code>domain/services/</code>, <code>support/</code>). Ejecución de Quality Gates gobernada por tags de severidad (<code>@P0</code>, <code>@P1</code>, <code>@P2</code>, <code>@story</code>).</p>
+        </div>
+
+        <div class="decision-card">
+          <h3>4. Localización Resiliente y Web-First Assertions (Cero Flakiness)</h3>
+          <p>Prioridad estricta en User-Facing Locators (<code>getByRole</code>, <code>getByLabel</code>, <code>getByTestId</code>) y Web-First Assertions con auto-waiting. Prohibición total de <code>waitForTimeout</code> arbitrarios y recolección automática de trazas en fallos.</p>
+        </div>
+
+        <div class="decision-card">
+          <h3>5. Integración con el Ecosistema TEA de BMAD</h3>
+          <p>Scripts NPM unificados (<code>bdd:gen</code>, <code>test:p0</code>, <code>test:p1</code>, <code>test:all</code>) y exportación de reportes hacia <code>_bmad-output/test-artifacts/</code> para automatizar la Matriz de Trazabilidad (<code>bmad-testarch-trace</code>) y el ciclo ATDD.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Rejected Options -->
+    <section class="section">
+      <h2>🚫 Opciones Rechazadas y Trade-offs</h2>
+      
+      <div class="rejected-card">
+        <h3>Screenplay Pattern Clásico (Actors / Tasks / Abilities)</h3>
+        <p><strong>Razón de descarte:</strong> Genera alta sobrecarga de ceremonia y duplica innecesariamente capas que ya resuelven Gherkin + Fixtures nativos de Playwright.</p>
+      </div>
+
+      <div class="rejected-card">
+        <h3>Page Object Model Monolítico Tradicional</h3>
+        <p><strong>Razón de descarte:</strong> Genera "God Classes" que violan el principio de responsabilidad única (SRP) y colisionan con el ciclo de vida de los fixtures.</p>
+      </div>
+
+      <div class="rejected-card">
+        <h3>World / State Bag Dinámico no Tipado (Clave-Valor)</h3>
+        <p><strong>Razón de descarte:</strong> Destruye la seguridad de tipos de TypeScript y provoca fugas de estado en ejecuciones paralelas multihilo.</p>
+      </div>
+
+      <div class="rejected-card">
+        <h3>Wrappers Customizados con Pausas Fijas (<code>sleep</code> / <code>waitForTimeout</code>)</h3>
+        <p><strong>Razón de descarte:</strong> Anula el auto-waiting nativo de Playwright y es la causa #1 de inestabilidad y tests flaky en CI/CD.</p>
+      </div>
+
+    </section>
+
+    <!-- Personas -->
+    <section class="section">
+      <h2>👥 Personas & Voces que Desafiaron la Idea</h2>
+      <div class="personas-grid">
+        <div class="persona-card">
+          <div class="persona-icon">🧪</div>
+          <div class="persona-info">
+            <h4>Murat (Master Test Architect - TEA)</h4>
+            <p>Aseguró la integración nativa con fixtures de Playwright, trazabilidad y Quality Gates de BMAD.</p>
+          </div>
+        </div>
+
+        <div class="persona-card">
+          <div class="persona-icon">🎯</div>
+          <div class="persona-info">
+            <h4>Yui (The Craftsman)</h4>
+            <p>Presionó por simplicidad, eliminación de wrappers redundantes y tipado estricto de extremo a extremo.</p>
+          </div>
+        </div>
+
+        <div class="persona-card">
+          <div class="persona-icon">🏗️</div>
+          <div class="persona-info">
+            <h4>Winston (System Architect)</h4>
+            <p>Estructuró el layout modular por capas y la separación de responsabilidades SOLID.</p>
+          </div>
+        </div>
+
+        <div class="persona-card">
+          <div class="persona-icon">🌶️</div>
+          <div class="persona-info">
+            <h4>Boundary (Edge-Case Hunter)</h4>
+            <p>Blindó la política de locators semánticos y aserciones Web-First para eliminar tests flaky.</p>
+          </div>
+        </div>
+
+        <div class="persona-card">
+          <div class="persona-icon">⚡</div>
+          <div class="persona-info">
+            <h4>Elena & Sébastien (CI/CD Leads - Invitados)</h4>
+            <p>Desafiaron el paralelismo sin colisiones, la estrategia Network-First y la gobernanza por tags.</p>
+          </div>
+        </div>
+
+        <div class="persona-card">
+          <div class="persona-icon">🚀</div>
+          <div class="persona-info">
+            <h4>Marc & Klaus (DevOps & Clean Code - Invitados)</h4>
+            <p>Garantizaron scripts deterministas en package.json y pureza en la orquestación de steps.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Next Steps -->
+    <section class="section">
+      <h2>🚀 Siguientes Pasos Recomendados en BMAD</h2>
+      <ul class="next-steps-list">
+        <li>
+          <span class="step-tag">bmad-architecture</span>
+          Documentar el diseño técnico detallado y contratos de componentes si se requiere un ADR formal.
+        </li>
+        <li>
+          <span class="step-tag">bmad-testarch-framework</span>
+          Inicializar el framework base en el repositorio con las dependencias de <code>playwright-bdd</code> y TypeScript.
+        </li>
+        <li>
+          <span class="step-tag">bmad-testarch-atdd</span>
+          Generar los primeros scaffolds de pruebas de aceptación (fase roja) a partir de historias de usuario.
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</body>
+</html>
